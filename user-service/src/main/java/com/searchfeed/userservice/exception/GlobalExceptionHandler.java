@@ -28,4 +28,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(new CustomErrorResponse("Authentication Failed",e.getMessage()));
     }
+    @ExceptionHandler(ProfileDataUpdateException.class)
+    public ResponseEntity<CustomErrorResponse> handleException(ProfileDataUpdateException e){
+        log.warn("Error in Profile Data Update :{}",e.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(new CustomErrorResponse("Profile Data Update Failed",e.getMessage()));
+    }
 }
