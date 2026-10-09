@@ -25,7 +25,7 @@ public class AuthController {
     ){
         log.info("Registering Request for  :{}", registerRequest.getEmail());
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(authService.register(request));
+                .body(authService.register(registerRequest));
     }
 
     public ResponseEntity<AuthResponse> login(

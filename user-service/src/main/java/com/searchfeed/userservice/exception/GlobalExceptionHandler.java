@@ -16,4 +16,16 @@ public class GlobalExceptionHandler {
                 .body(new CustomErrorResponse("Account Already Exists",
                         e.getMessage()));
     }
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<CustomErrorResponse> handleUserNotFoundException(UserNotFoundException e){
+        log.warn("Error in User Login :{}",e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new CustomErrorResponse("User not found",e.getMessage()));
+    }
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<CustomErrorResponse> handleException(AuthenticationException e){
+        log.warn("Error in User Authentication :{}",e.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new CustomErrorResponse("Authentication Failed",e.getMessage()));
+    }
 }
