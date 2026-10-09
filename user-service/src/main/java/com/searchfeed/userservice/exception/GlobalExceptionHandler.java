@@ -34,4 +34,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(new CustomErrorResponse("Profile Data Update Failed",e.getMessage()));
     }
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<CustomErrorResponse> handleException(RuntimeException e){
+        log.warn("Error in User Exception :{}",e.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new CustomErrorResponse("Internal Server Error","Something Went Wrong"));
+    }
 }

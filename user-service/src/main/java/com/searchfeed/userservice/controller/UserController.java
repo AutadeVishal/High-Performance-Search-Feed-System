@@ -1,5 +1,6 @@
 package com.searchfeed.userservice.controller;
 
+import com.searchfeed.userservice.dto.ConnectionResponse;
 import com.searchfeed.userservice.dto.UserResponse;
 import com.searchfeed.userservice.exception.ProfileDataUpdateException;
 import com.searchfeed.userservice.service.UserService;
@@ -19,9 +20,9 @@ public class UserController {
     @GetMapping("/{userId}")
     public ResponseEntity<UserResponse> getUserProfile(
             @PathVariable String userId,
-            @RequestHeader("X-User_Id") String requestingUserId
+            @RequestHeader("X-User_Id") String senderId
     ) {
-        log.info("Get Profile  : {} requested by : {} ",userId,requestingUserId);
+        log.info("Get Profile  : {} requested by : {} ",userId,senderId);
         return ResponseEntity.ok(userService.getUserProfile(userId);
 
     }
@@ -29,28 +30,28 @@ public class UserController {
     @PutMapping("/profile/{userId}")
     public ResponseEntity<UserResponse> updateProfile(
             @PathVariable String userId,
-            @RequestHeader("X-User_Id") String requestingUserId
+            @RequestHeader("X-User_Id") String senderId
     ){
-        if(!userId.equals(requestingUserId)){
+        if(!userId.equals(senderId)){
             throw new ProfileDataUpdateException("Cannot Change profile of other users");
         }
-        return ResponseEntity.ok(userService.updateProfile(userid,requestingUserId);
+        return ResponseEntity.ok(userService.updateProfile(userid,senderId);
     }
 
     @PostMapping("/connection/connect/{targetUserId}")
-    public ResponseEntity<UserService> sendConnectionRequest(
+    public ResponseEntity<ConnectionResponse> sendConnectionRequest(
             @PathVariable String targetUserId,
-            @RequestHeader("X-User_Id") String requestingUserId
+            @RequestHeader("X-User_Id") String senderId
     ){
         return ResponseEntity.ok(userService.sendConnectionRequest(
-                targetUserId,requestingUserId
+                targetUserId,senderId
         ));
     }
 
     @PutMapping("/connection/accept/{connectionId}")
-    public ResponseEntity<String>acceptConnectionRequest(
+    public ResponseEntity<ConnectionResponse>acceptConnectionRequest(
             @PathVariable String connectionId,
-            @RequestHeader("X-User_Id") String requestingUserId
+            @RequestHeader("X-User_Id") String senderId
     ){
         return ResponseEntity.ok(
         userService.acceptConnectionRequest(connectionId)
