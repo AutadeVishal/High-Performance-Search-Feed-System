@@ -35,6 +35,7 @@ public class Post {
     private int likeCount;
     private int commentCount;
     @CreationTimestamp
+    @Column(updatable=false)
     private LocalDateTime createdAt;
     @UpdateTimestamp
     private LocalDateTime updatedAt;
