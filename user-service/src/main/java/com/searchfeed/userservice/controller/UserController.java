@@ -6,6 +6,7 @@ import com.searchfeed.userservice.exception.ProfileDataUpdateException;
 import com.searchfeed.userservice.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -59,9 +60,13 @@ public class UserController {
     }
 
     @GetMapping("/connections/{userId}")
-    public ResponseEntity<List<UserResponse>> getConnections(
-        @PathVariable String userId
-    ){
-
+    public ResponseEntity<Page<UserResponse>> getConnections(
+            @PathVariable String userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        return ResponseEntity.ok(
+                userService.getConnections(userId, page, size)
+        );
     }
 }

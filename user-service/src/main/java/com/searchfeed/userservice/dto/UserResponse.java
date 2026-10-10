@@ -3,6 +3,7 @@ package com.searchfeed.userservice.dto;
 import com.searchfeed.userservice.entity.UserRole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -13,6 +14,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class UserResponse {
     private String id;
     private String email;
