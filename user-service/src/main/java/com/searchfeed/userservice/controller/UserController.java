@@ -82,7 +82,7 @@ public class UserController {
             log.error("Cannot Upload Profile Photo as userId : {} and requestingUserId : {} ",userId,requestingUserId);
             throw new ProfileDataUpdateException("Cannot Change profile of other users");
         }
-        return userService.uploadProfilePhoto(userId,file);
+        return userService.updateProfilePhoto(userId,file);
     }
     @PostMapping("/cover-photo/{userId}")
     public ResponseEntity<UserResponse> uploadProfilePhoto(

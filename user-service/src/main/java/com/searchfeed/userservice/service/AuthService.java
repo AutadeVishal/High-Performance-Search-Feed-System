@@ -74,7 +74,7 @@ public class AuthService {
         kafkaTemplate.send(USER_CREATED_TOPIC,savedUser.getId(),userCreatedEvent);
         log.info("user.created event published :{} ",savedUser.getId());
 
-        String token=generateAccessToken(savedUser.getId(),savedUser.getEmail());
+        String token=generateToken(savedUser.getId(),savedUser.getEmail());
         return buildAuthResponse(savedUser,token);
     }
 
@@ -91,7 +91,7 @@ public class AuthService {
             throw new AuthenticationException("Wrong Password");
         }
         log.info("Login Successfully : {}",user.getId());
-        String token=generateAccessToken(user.getId(),user.getEmail());
+        String token=generateToken(user.getId(),user.getEmail());
         return buildAuthResponse(user,token);
     }
     private AuthResponse buildAuthResponse(User user,String token){
@@ -105,7 +105,7 @@ public class AuthService {
                 .build();
     }
 
-    private String generateAccessToken(String userId,String email){
+    private String generateToken(String userId,String email){
         return Jwts.builder()
                 .claim("user_id",userId)
                 .subject(email)
