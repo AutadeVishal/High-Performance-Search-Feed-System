@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -69,5 +70,30 @@ public class UserController {
         return ResponseEntity.ok(
                 userService.getConnections(userId, page, size)
         );
+    }
+
+    @PostMapping("/profile-photo/{userId}")
+    public ResponseEntity<UserResponse> uploadProfilePhoto(
+            @PathVariable String userId,
+            @RequestHeader("X-User-Id") String requestingUserId,
+            @RequestParam("file") MultipartFile file
+    ){
+        if(!userId.equals(requestingUserId)){
+            log.error("Cannot Upload Profile Photo as userId : {} and requestingUserId : {} ",userId,requestingUserId);
+            throw new ProfileDataUpdateException("Cannot Change profile of other users");
+        }
+        return userService.uploadProfilePhoto(userId,file);
+    }
+    @PostMapping("/cover-photo/{userId}")
+    public ResponseEntity<UserResponse> uploadProfilePhoto(
+            @PathVariable String userId,
+            @RequestHeader("X-User-Id") String requestingUserId,
+            @RequestParam("file") MultipartFile file
+    ){
+        if(!userId.equals(requestingUserId)){
+            log.error("Cannot Upload Cover Photo as userId : {} and requestingUserId : {} ",userId,requestingUserId);
+            throw new ProfileDataUpdateException("Cannot Change profile of other users");
+        }
+        return userService.updateCoverPhoto(userId,file);
     }
 }

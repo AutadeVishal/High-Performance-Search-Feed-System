@@ -14,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 
 @Service
@@ -22,7 +24,7 @@ import java.util.List;
 public class UserService {
     private final UserRespository userRespository;
     private final ConnectionRepository connectionRepository;
-
+    private final S3Service s3Service;
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private static final String USER_UPDATED_TOPIC="user.updated";
     private static final String CONNECTION_ACCEPTED_TOPIC="connection.accepted";
@@ -139,6 +141,26 @@ public class UserService {
                 .createdAt(user.getCreatedAt())
                 .build();
     }
-
+    public UserResponse updateProfilePhoto(String userId, MultipartFile file){
+        User user=userRespository.findById(userId)
+                .orElseThrow(()->new RuntimeException("updateProfilePhoto : User Profile Does not Exist for "+userId));
+        String photoURL=s3Service.uploadFile(
+                file,"profiles/"+userId+"/avatar"
+        );
+        user.setProfilePhotoURL(photoURL);
+        User savedUser=userRespository.save(user);
+        log.info("updateProfilePhoto : Profile Photo Updated for User Id :{} ",savedUser.getId());
+        return toUserResponse(savedUser);
+    }
+    public UserResponse updateCoverPhoto(String userId, MultipartFile file){
+        User user=userRespository.findById(userId)
+                .orElseThrow(()->new RuntimeException("updateProfilePhoto : User Profile Does not Exist for "+userId));
+        String photoURL=s3Service.uploadFile(
+                file,"profiles/"+userId+"/cover"
+        );
+        user.setProfilePhotoURL(photoURL);
+        User savedUser=userRespository.save(user);
+        return toUserResponse(savedUser);
+    }
 
 }
