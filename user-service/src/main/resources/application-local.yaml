@@ -1,0 +1,33 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/user_db?createDatabaseIfNotExist=true
+    username : root
+    password: root
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+  server:
+    port: 8081
+jwt:
+    secret:
+    expiration:
+    refresh-expiration:
+AWS:
+  access-key:
+  secret-key:
+  region:
+  s3:
+    bucket-name:
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health,info
