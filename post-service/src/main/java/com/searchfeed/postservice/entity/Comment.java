@@ -1,0 +1,31 @@
+package com.searchfeed.postservice.entity;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name="comments")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class Comment {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
+    @Column(nullable=false)
+    private String postId;
+    @Column(nullable=false)
+    private String authorId;
+    @Column(nullable=false,length = 200)
+    private String content;
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
+}
