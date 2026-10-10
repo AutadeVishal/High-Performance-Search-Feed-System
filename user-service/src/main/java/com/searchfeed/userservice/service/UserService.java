@@ -5,25 +5,16 @@ import com.searchfeed.userservice.dto.UserResponse;
 import com.searchfeed.userservice.entity.Connection;
 import com.searchfeed.userservice.entity.ConnectionStatus;
 import com.searchfeed.userservice.entity.User;
-import com.searchfeed.userservice.entity.UserRole;
 import com.searchfeed.userservice.event.ConnectionRequestedEvent;
+import com.searchfeed.userservice.event.UserCreatedEvent;
 import com.searchfeed.userservice.respository.ConnectionRepository;
 import com.searchfeed.userservice.respository.UserRespository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
-import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-
-import javax.sql.ConnectionEvent;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @Service
 @Slf4j
@@ -33,6 +24,7 @@ public class UserService {
     private final ConnectionRepository connectionRepository;
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
+    private static final String USER_UPDATED_TOPIC="user.updated";
     private static final String CONNECTION_ACCEPTED_TOPIC="connection.accepted";
     private static final String CONNECTION_REQUESTED_TOPIC="connection.requested";
     public ConnectionResponse sendConnectionRequest(String receiverId, String senderId){
@@ -82,7 +74,6 @@ public class UserService {
                 .build();
     }
     public Page<UserResponse> getConnections(String userId, int page, int size) {
-
         Pageable pageable = PageRequest.of(page, size);
 
         Page<Connection> connectionPage =
@@ -104,6 +95,33 @@ public class UserService {
                 pageable,
                 connectionPage.getTotalElements()
         );
+    }
+    public UserResponse getUserProfile(String userId){
+        User user=userRespository.findById(userId)
+                .orElseThrow(()->new RuntimeException("User Profile Does not Exist for "+userId));
+        return toUserResponse(user);
+    }
+
+    public UserResponse updateUserProfile(String userId,UserResponse request){
+        User user=userRespository.findById(userId)
+                .orElseThrow(()->new RuntimeException("User Profile Does not Exist for "+userId));
+        user.setHeadline(request.getHeadline());
+        user.setAbout(request.getAbout());
+        user.setLocation(request.getLocation());
+        user.setSkills(request.getSkills());
+        User savedUser=userRespository.save(user);
+        UserCreatedEvent userCreatedEvent=UserCreatedEvent.builder()
+                .id(savedUser.getId())
+                .firstName(savedUser.getFirstName())
+                .lastName(savedUser.getLastName())
+                .email(savedUser.getEmail())
+                .headline(savedUser.getHeadline())
+                .location(savedUser.getLocation())
+                .skills(savedUser.getSkills())
+                .build();
+        kafkaTemplate.send(USER_UPDATED_TOPIC,savedUser.getId(),userCreatedEvent);
+        log.info("user.updated event published :{} ",savedUser.getId());
+        return toUserResponse(savedUser);
     }
     private UserResponse toUserResponse(User user){
         return UserResponse.builder()

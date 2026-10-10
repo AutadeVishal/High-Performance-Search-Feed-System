@@ -21,22 +21,23 @@ public class UserController {
     @GetMapping("/{userId}")
     public ResponseEntity<UserResponse> getUserProfile(
             @PathVariable String userId,
-            @RequestHeader("X-User_Id") String senderId
+            @RequestHeader("X-User_Id") String requestingUserId
     ) {
-        log.info("Get Profile  : {} requested by : {} ",userId,senderId);
-        return ResponseEntity.ok(userService.getUserProfile(userId);
+        log.info("Get Profile  : {} requested by : {} ",userId,requestingUserId);
+        return ResponseEntity.ok(userService.getUserProfile(userId));
 
     }
 
     @PutMapping("/profile/{userId}")
     public ResponseEntity<UserResponse> updateProfile(
             @PathVariable String userId,
-            @RequestHeader("X-User_Id") String senderId
+            @RequestHeader("X-User_Id") String requestingUserId,
+            @RequestBody UserResponse request
     ){
-        if(!userId.equals(senderId)){
+        if(!userId.equals(requestingUserId)){
             throw new ProfileDataUpdateException("Cannot Change profile of other users");
         }
-        return ResponseEntity.ok(userService.updateProfile(userid,senderId);
+        return ResponseEntity.ok(userService.updateUserProfile(userId,request));
     }
 
     @PostMapping("/connection/connect/{targetUserId}")

@@ -16,6 +16,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -65,9 +66,12 @@ public class AuthService {
                 .firstName(savedUser.getFirstName())
                 .lastName(savedUser.getLastName())
                 .email(savedUser.getEmail())
+                .headline(savedUser.getHeadline())
+                .location(savedUser.getLocation())
+                .skills(savedUser.getSkills())
                 .build();
         //publish user.created event for search service
-        kafkaTemplate.send(USER_CREATED_TOPIC,savedUser.getId(),userCreatedEvent)
+        kafkaTemplate.send(USER_CREATED_TOPIC,savedUser.getId(),userCreatedEvent);
         log.info("user.created event published :{} ",savedUser.getId());
 
         String token=generateAccessToken(savedUser.getId(),savedUser.getEmail());
@@ -91,7 +95,7 @@ public class AuthService {
         return buildAuthResponse(user,token);
     }
     private AuthResponse buildAuthResponse(User user,String token){
-        AuthResponse authResponse=AuthResponse.builder()
+        return AuthResponse.builder()
                 .accessToken(token)
                 .refreshToken(generateRefreshToken(user.getId()))
                 .id(user.getId())

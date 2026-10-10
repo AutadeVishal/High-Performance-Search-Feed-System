@@ -3,6 +3,8 @@ package com.searchfeed.userservice.event;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @Builder
 public class UserCreatedEvent {
@@ -10,5 +12,8 @@ public class UserCreatedEvent {
     String firstName;
     String lastName;
     String email;
+    String headline;
+    String location;
+    List<String> skills;
 
 }
